@@ -22,15 +22,15 @@ This system handles user authentication and **role-based access control** (RBAC)
 ### 1. Clone the Project
 
 ```bash
-git clone <your-repo-url>
-cd <project-directory>
+git clone https://github.com/KGPraveen/erp.git
+cd erp
 ```
 
 ### 2. Create Virtual Environment
 
 ```bash
 python -m venv env
-env\Scripts\activate     # Windows
+env/Scripts/activate     # Windows
 # source env/bin/activate (Linux/Mac)
 ```
 
@@ -40,13 +40,19 @@ env\Scripts\activate     # Windows
 pip install -r requirements.txt
 ```
 
-### 4. Migrate Database
+### 4. Change Directory
+
+```bash
+cd erp_project
+```
+
+### 5. Migrate Database
 
 ```bash
 python manage.py migrate
 ```
 
-### 5. Run Server
+### 6. Run Server
 
 ```bash
 python manage.py runserver
