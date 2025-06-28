@@ -13,6 +13,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
+from rest_framework.generics import RetrieveUpdateDestroyAPIView
+from .permissions import IsAdminUserOnly  # this already exists
 
 
 class RegisterView(generics.CreateAPIView):
@@ -83,3 +85,10 @@ class LogoutView(APIView):
                 {"detail": "Unexpected error."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+class UserDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAdminUserOnly]
+    lookup_field = 'id'
