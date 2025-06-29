@@ -46,9 +46,9 @@ class UserListView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         if user.role == user.Role.ADMIN:
-            return User.objects.all()
+            return User.objects.all().order_by('id')
         elif user.role == user.Role.MANAGER:
-            return User.objects.filter(role=User.Role.EMPLOYEE)
+            return User.objects.filter(role=User.Role.EMPLOYEE).order_by('id')
         return User.objects.none()
 
 # /profile - all users
@@ -103,7 +103,7 @@ def login_view(request):
         username = request.POST['username']
         password = request.POST['password']
 
-        response = requests.post('http://127.0.0.1:8000/api/login/', json={
+        response = requests.post('http://127.0.0.1:8000/accounts/api/login/', json={
             'username': username,
             'password': password
         })
@@ -128,7 +128,7 @@ def dashboard_view(request):
         'Authorization': f'Bearer {token}'
     }
 
-    res = requests.get('http://127.0.0.1:8000/api/profile/', headers=headers)
+    res = requests.get('http://127.0.0.1:8000/accounts/api/profile/', headers=headers)
     if res.status_code != 200:
         return redirect('login-view')
 
@@ -137,7 +137,7 @@ def dashboard_view(request):
 
     if role == 'ADMIN':
         users_res = requests.get(
-            'http://127.0.0.1:8000/api/users/', headers=headers)
+            'http://127.0.0.1:8000/accounts/api/users/', headers=headers)
         if users_res.status_code == 200:
             users = users_res.json()
             return render(request, 'admin_dashboard.html', {'users': users})
@@ -145,7 +145,7 @@ def dashboard_view(request):
 
     elif role == 'MANAGER':
         users_res = requests.get(
-            'http://127.0.0.1:8000/api/users/', headers=headers)
+            'http://127.0.0.1:8000/accounts/api/users/', headers=headers)
         if users_res.status_code == 200:
             all_users = users_res.json()
             employees = [u for u in all_users if u['role'] == 'EMPLOYEE']
@@ -178,11 +178,13 @@ def add_user_view(request):
         body = {
             'username': request.POST['username'],
             'email': request.POST['email'],
+            'first_name': request.POST['first_name'],
+            'last_name': request.POST['last_name'],
             'password': request.POST['password'],
             'role': request.POST['role']
         }
         res = requests.post(
-            'http://127.0.0.1:8000/api/register/', headers=headers, json=body)
+            'http://127.0.0.1:8000/accounts/api/register/', headers=headers, json=body)
         if res.status_code == 201:
             return redirect('dashboard')
         else:
@@ -201,12 +203,14 @@ def edit_user_view(request, id):
         'Content-Type': 'application/json'
     }
 
-    user_api_url = f'http://127.0.0.1:8000/api/users/{id}/'
+    user_api_url = f'http://127.0.0.1:8000/accounts/api/users/{id}/'
 
     if request.method == 'POST':
         body = {
             'username': request.POST['username'],
             'email': request.POST['email'],
+            'first_name': request.POST['first_name'],
+            'last_name': request.POST['last_name'],
             'role': request.POST['role']
         }
         res = requests.put(user_api_url, headers=headers, json=body)
@@ -231,8 +235,14 @@ def delete_user_view(request, id):
         'Authorization': f'Bearer {token}'
     }
 
-    user_api_url = f'http://127.0.0.1:8000/api/users/{id}/'
+    user_api_url = f'http://127.0.0.1:8000/accounts/api/users/{id}/'
     res = requests.delete(user_api_url, headers=headers)
 
     return redirect('dashboard')
-    
+
+
+def root_redirect_view(request):
+    if request.session.get('access'):
+        return redirect('dashboard')
+    else:
+        return redirect('login-view')
