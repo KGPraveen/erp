@@ -19,10 +19,10 @@ This system handles user authentication and **role-based access control** (RBAC)
 
 ## 🏁 Setup Instructions
 
-### 1. Clone the Project
+### 1. Clone the Project (Branch with PostGresSQL)
 
 ```bash
-git clone https://github.com/KGPraveen/erp.git
+git clone --branch postgres-db --single-branch https://github.com/KGPraveen/erp.git
 cd erp
 ```
 
@@ -72,11 +72,11 @@ python manage.py runserver
 
 | Method | URL              | Description                            | Access        |
 |--------|------------------|----------------------------------------|---------------|
-| POST   | `/api/register/` | Register a new user                    | Public        |
-| POST   | `/api/login/`    | Login & receive JWT tokens             | Public        |
-| POST   | `/api/logout/`   | Logout (blacklists refresh token)      | Authenticated |
-| GET    | `/api/users/`    | List all users                         | Admin, Manager |
-| GET    | `/api/profile/`  | View own profile                       | All users     |
+| POST   | `accounts/api/register/` | Register a new user                    | Public        |
+| POST   | `accounts/api/login/`    | Login & receive JWT tokens             | Public        |
+| POST   | `accounts/api/logout/`   | Logout (blacklists refresh token)      | Authenticated |
+| GET    | `accounts/api/users/`    | List all users                         | Admin, Manager |
+| GET    | `accounts/api/profile/`  | View own profile                       | All users     |
 
 ### 📌 Token Format
 
@@ -89,11 +89,11 @@ python manage.py runserver
 
 ### 🔐 Login
 
-**POST** `/api/login/`  
+**POST** `accounts/api/login/`  
 ```json
 {
   "username": "adminfox",
-  "password": "adminpass123"
+  "password": "admin123"
 }
 ```
 
@@ -109,7 +109,7 @@ python manage.py runserver
 
 ### 🚪 Logout
 
-**POST** `/api/logout/`  
+**POST** `accounts/api/logout/`  
 (Requires access token in Authorization header)
 
 ```json
@@ -159,9 +159,66 @@ Frontend uses this to redirect and secure views accordingly.
 
 ---
 
-## 🔄 To Do (Frontend Phase)
+&nbsp;
 
-- Responsive UI with TailwindCSS
-- Login form and dashboard views per role
-- Route protection via custom logic
-- Logout button that clears token and calls API
+&nbsp;
+
+# 🔮 Frontend Features (Template-Based)
+
+The frontend was built using Django templates and Bootstrap for responsive design.
+
+### 🎯 Functionality
+
+- **Login Page**:
+  - Authenticates users using the backend API (`accounts/api/login/`).
+  - Displays helpful error messages on invalid login.
+  
+- **Role-Based Dashboards**:
+  - **Admin Dashboard**:
+    - View all users.
+    - Add new users (with role, email, first/last name).
+    - Edit and delete existing users.
+  - **Manager Dashboard**:
+    - View-only access to employee list.
+  - **Employee Dashboard**:
+    - View their own profile.
+
+- **Logout**:
+  - Clears session tokens and redirects to login.
+
+- **Route Protection**:
+  - Users without tokens are redirected to login.
+  - Role-based redirection handled in views.
+
+### 🖌️ UI & Styling
+
+- Built with **Bootstrap 5** (CDN linked).
+- Responsive layout with:
+  - Centered login form.
+  - Scrollable tables on smaller screens.
+  - Proper padding/margins across forms and tables.
+
+---
+
+### 🚦 How it Works
+
+1. **Login Form** (template: `login.html`)  
+   
+   Sends credentials to `accounts/api/login/` and stores JWT in Django session.
+
+2. **Dashboard** (template: `admin_dashboard.html`, etc.)  
+   
+   Uses token to fetch user role and relevant data from `accounts/api/profile/` and `accounts/api/users/`.
+
+3. **Add/Edit/Delete**  
+   
+   Uses `POST`, `PUT`, and `DELETE` calls to backend API endpoints, protected by the access token.
+
+---
+
+### 🔐 Security Notes
+
+- All dashboard and user management views check for a valid token in the session.
+- CSRF protection enabled for all forms, except where using JSON API calls.
+
+---
