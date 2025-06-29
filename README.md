@@ -52,11 +52,18 @@ cd erp_project
 python manage.py migrate
 ```
 
-### 6. Run Server
+### 6. Create a superuser
+
+```bash
+python manage.py createsuperuser
+```
+
+### 7. Run Server
 
 ```bash
 python manage.py runserver
 ```
+
 
 ---
 
@@ -92,7 +99,7 @@ python manage.py runserver
 **POST** `accounts/api/login/`  
 ```json
 {
-  "username": "adminfox",
+  "username": "AdminFox",
   "password": "admin123"
 }
 ```

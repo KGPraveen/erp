@@ -9,6 +9,11 @@
       <input type="text" name="username" class="form-control" value="{{ user.username }}" required>
     </div>
     <div class="mb-3">
+      <label>New Password:</label>
+      <input type="password" name="password" class="form-control">
+      <small class="text-muted">Leave blank to keep current password.</small>
+    </div>
+    <div class="mb-3">
       <label>Email:</label>
       <input type="email" name="email" class="form-control" value="{{ user.email }}">
     </div>

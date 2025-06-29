@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container mt-5">
-  <h2>Welcome, {{ user.username }}!</h2>
+  <h2>Welcome, {{ user.first_name }} {{ user.last_name }}!</h2>
   <div class="card mt-4">
     <div class="card-body">
       <p><strong>Username:</strong> {{ user.username }}</p>

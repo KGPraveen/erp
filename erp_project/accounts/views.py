@@ -128,7 +128,8 @@ def dashboard_view(request):
         'Authorization': f'Bearer {token}'
     }
 
-    res = requests.get('http://127.0.0.1:8000/accounts/api/profile/', headers=headers)
+    res = requests.get(
+        'http://127.0.0.1:8000/accounts/api/profile/', headers=headers)
     if res.status_code != 200:
         return redirect('login-view')
 
@@ -213,6 +214,13 @@ def edit_user_view(request, id):
             'last_name': request.POST['last_name'],
             'role': request.POST['role']
         }
+        
+        new_password = request.POST.get('password')
+        if new_password:
+            body['password'] = new_password
+        print(new_password)
+        print(body)
+
         res = requests.put(user_api_url, headers=headers, json=body)
         if res.status_code == 200:
             return redirect('dashboard')
