@@ -22,20 +22,38 @@ import requests
 
 
 class RegisterView(generics.CreateAPIView):
+    # This class-based view comes from DRF's CreateAPIView
+    # which is prebuilt to handle POST requests that
+    # create new objects in the database — in our case, a new user.
+
     queryset = User.objects.all()
+
     serializer_class = RegisterSerializer
+    # tells which serializer to use, it handles the
+    # Creation, Validation and Serialization/Deserailization
+
     permission_classes = [permissions.AllowAny]
+    # Controls who can access this view.
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    # TokenObtainPairSerializer is SimpleJWT's default serializer for login.
+    # It takes in a username and password, Authenticates the user and
+    # returns an access token and a refresh token
+
     def validate(self, attrs):
         data = super().validate(attrs)
+        # calls super class' (TokenObtainPairSerializer's) validate function
+
         data['role'] = self.user.role
         data['username'] = self.user.username
         return data
 
 
 class LoginView(TokenObtainPairView):
+    # This is a built-in class from rest_framework_simplejwt.views
+    # It handles login endpoint.
+
     serializer_class = CustomTokenObtainPairSerializer
 
 
@@ -63,7 +81,11 @@ class ProfileView(generics.RetrieveAPIView):
 
 
 class LogoutView(APIView):
+    # This is the API endpoint for logging out a user by blacklisting their refresh token.
+
     permission_classes = [permissions.IsAuthenticated]
+    # Only authenticated users (with a valid token) are allowed with above permission
+    # therefore, allowing below code to be executed.
 
     def post(self, request):
         try:
@@ -214,7 +236,7 @@ def edit_user_view(request, id):
             'last_name': request.POST['last_name'],
             'role': request.POST['role']
         }
-        
+
         new_password = request.POST.get('password')
         if new_password:
             body['password'] = new_password

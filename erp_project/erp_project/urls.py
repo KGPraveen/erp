@@ -16,11 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.shortcuts import redirect
 from accounts.views import root_redirect_view
 
 urlpatterns = [
-    path('', root_redirect_view),  # ✅ Handles /
-    path('accounts/', include('accounts.urls')),  # Put API + frontend under /accounts/ if needed
+    path('', root_redirect_view),
+    # Goes to dashboard if signed in otherwise
+    # redirects to login page if not signed in
+
+    path('accounts/', include('accounts.urls')),
     path('admin/', admin.site.urls),
 ]

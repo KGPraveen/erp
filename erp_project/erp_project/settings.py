@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+from ast import AugStore
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -37,10 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    'rest_framework_simplejwt',
-    'accounts',
+    'rest_framework',  # added rest framework as app
+    'rest_framework_simplejwt',  # also added rest simple jwt as app for simple JWT
+    'accounts',  # name of the app that we created
     'rest_framework_simplejwt.token_blacklist',
+    # added token blacklist for logout of users
 ]
 
 MIDDLEWARE = [
@@ -131,15 +133,28 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+# ===============================================================================================
+# Sets the default authentication class for Django Rest Framework (DRF) to use JWT authentication.
+# Specifically the JWTAuthentication class from the rest_framework_simplejwt package.
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
+# ===============================================================================================
 
+
+# Simple JWT settings configured here in django's settings.py
 SIMPLE_JWT = {
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
     'BLACKLIST_AFTER_ROTATION': True,
+    # enables token blacklisting after rotation.
+    # This means that when a refresh token is used to obtain
+    # a new access token, the old access token is added to a
+    # blacklist to prevent it from being used again.
 }
 
+# ===============================================================================================
+# This line of code tells Django to use a custom User model
 AUTH_USER_MODEL = 'accounts.User'
+# (accounts.User that we defined) instead of the default User model provided by Django.
